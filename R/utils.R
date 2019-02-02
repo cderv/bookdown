@@ -182,8 +182,10 @@ check_special_chars = function(filename) {
 Rscript = function(...) xfun::Rscript(...)
 
 Rscript_render = function(file, ...) {
+  travis_fold("start", input, sprintf("processing file: %s", file))
   args = shQuote(c(bookdown_file('scripts', 'render_one.R'), file, ...))
   if (Rscript(args) != 0) stop('Failed to compile ', file)
+  travis_fold("end", input)
 }
 
 clean_meta = function(meta_file, files) {
@@ -481,3 +483,15 @@ strip_latex_body = function(x, alt = '\nThe content was intentionally removed.\n
   }
   c(x1, x2[sort(i)], '\\end{document}')
 }
+
+
+# if document is knit on travis, add the folding tags.
+# from functions in https://github.com/yihui/crandalf
+travis_fold <- function(type = c("start", "end"), job, msg = NULL) {
+  type = match.arg(type)
+  if (Sys.getenv('TRAVIS') == 'true') {
+    cat(sprintf('travis_fold:%s:%s\r', type, job))
+    if (!is.null(msg)) cat(msg, '\n')
+  }
+}
+
