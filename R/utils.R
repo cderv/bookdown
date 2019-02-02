@@ -182,10 +182,10 @@ check_special_chars = function(filename) {
 Rscript = function(...) xfun::Rscript(...)
 
 Rscript_render = function(file, ...) {
-  travis_fold("start", input, sprintf("processing file: %s", file))
+  travis_fold("start", file, sprintf("processing file: %s", file))
   args = shQuote(c(bookdown_file('scripts', 'render_one.R'), file, ...))
   if (Rscript(args) != 0) stop('Failed to compile ', file)
-  travis_fold("end", input)
+  travis_fold("end", file)
 }
 
 clean_meta = function(meta_file, files) {
